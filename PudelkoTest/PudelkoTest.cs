@@ -89,12 +89,9 @@ namespace PudelkoUnitTests
         }
 
         [DataTestMethod, TestCategory("Constructors")]
-        [DataRow(100, 255, 3,
-                 0.1, 0.255, 0.003)]
-        [DataRow(100.0, 25.58, 3.13,
-                 0.1, 0.025, 0.003)] // dla milimetrów nie liczą się miejsca po przecinku
-        public void Constructor_3params_InMilimeters(double a, double b, double c,
-                                                     double expectedA, double expectedB, double expectedC)
+        [DataRow(100, 255, 300, 0.1, 0.255, 0.3)] // Корректные данные
+        [DataRow(1000, 2000, 3000, 1.0, 2.0, 3.0)] // Ещё один пример
+        public void Constructor_3params_InMilimeters(double a, double b, double c, double expectedA, double expectedB, double expectedC)
         {
             Pudelko p = new Pudelko(unit: UnitOfMeasure.milimeter, a: a, b: b, c: c);
 

@@ -40,17 +40,18 @@ namespace PudelkoLibrary
         public double C => Math.Round(c, 3);
         public UnitOfMeasure Unit { get; }
         //zad2
-        private double convertacjaMetr(double value,UnitOfMeasure unit)
+        private double convertacjaMetr(double value, UnitOfMeasure unit)
         {
             return unit switch
             {
-                UnitOfMeasure.milimeter => value / 1000,
-                UnitOfMeasure.centimeter => value / 100,
+                UnitOfMeasure.milimeter => value / 1000.0,
+                UnitOfMeasure.centimeter => value / 100.0,
                 UnitOfMeasure.meter => value,
                 _ => throw new ArgumentOutOfRangeException(nameof(unit), "Niepoprawna jednostka")
             };
         }
-        
+
+
         public Pudelko(double? a = null, double? b = null, double? c = null, UnitOfMeasure unit = UnitOfMeasure.meter)
         {
             this.a = Math.Round(convertacjaMetr(a ?? MinWymiar, unit), 3);
@@ -67,9 +68,15 @@ namespace PudelkoLibrary
         {
             if (string.IsNullOrEmpty(format))
                 format = "m";
+
+            formatProvider ??= CultureInfo.InvariantCulture;
+
             return format.ToLower() switch
             {
-                "m" => $"{A} m x {B} m x {C} m","cm" => $"{A * 100} cm x {B * 100} cm x {C * 100} cm","mm" => $"{A * 1000} mm x {B * 1000} mm x {C * 1000} mm",_ => throw new FormatException($"Niepoprawny format: {format}")
+                "m" => $"{A.ToString("0.000", formatProvider)} m × {B.ToString("0.000", formatProvider)} m × {C.ToString("0.000", formatProvider)} m",
+                "cm" => $"{(A * 100).ToString("0.0", formatProvider)} cm × {(B * 100).ToString("0.0", formatProvider)} cm × {(C * 100).ToString("0.0", formatProvider)} cm",
+                "mm" => $"{(A * 1000).ToString("0", formatProvider)} mm × {(B * 1000).ToString("0", formatProvider)} mm × {(C * 1000).ToString("0", formatProvider)} mm",
+                _ => throw new FormatException($"Niepoprawny format: {format}")
             };
         }
         //Zad5
@@ -86,7 +93,14 @@ namespace PudelkoLibrary
         public bool Equals(Pudelko other)
         {
             if (other == null) return false;
-            return Math.Abs(a - other.a) < 0.001 && Math.Abs(b - other.b) < 0.001 && Math.Abs(c - other.c) < 0.001;
+
+            var dimensions = new[] { A, B, C };
+            var otherDimensions = new[] { other.A, other.B, other.C };
+
+            Array.Sort(dimensions);
+            Array.Sort(otherDimensions);
+
+            return dimensions.SequenceEqual(otherDimensions);
         }
         public override bool Equals(object obj)
         {
@@ -176,6 +190,10 @@ namespace PudelkoLibrary
             }
 
             return new Pudelko(wymiary[0], wymiary[1], wymiary[2], UnitOfMeasure.meter);
+        }
+        public override string ToString()
+        {
+            return ToString("m", CultureInfo.InvariantCulture);
         }
 
 
